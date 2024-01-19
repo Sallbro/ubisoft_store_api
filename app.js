@@ -95,11 +95,11 @@ app.get('/singlegame/:id', async (req, res) => {
         // system requirement 
         const sys_req = {};
         $("div.tabs-content > div > div.experience-component").map(function (i, e) {
-            
+
             const sys = $(e).find("div.tabs-panel > li > a").text().trim();
             if (sys != '' && sys != null) {
                 const sys_data = {};
-                
+
                 $(e).find("div.tabs-panel > dl.tabs-content > div").each(function () {
                     const sysname = $(this).find("dt").text().trim();
                     const sysvalue = $(this).find("dd").text().trim();
@@ -119,7 +119,7 @@ app.get('/singlegame/:id', async (req, res) => {
 });
 
 app.get('/pgno/:page_no', async (req, res) => {
-    let page_no = req.params.page_no;
+    let page_no = req.params.page_no == 1 ? 0 : req.params.page_no;
     let act_url = process.env['GET_PAGE_URL'];
     page_no = Number(page_no) * 30;
     let param = process.env['GET_PAGE_URL_PARAM'];
@@ -173,6 +173,200 @@ app.get('/search/:sugg', async (req, res) => {
         res.status(400).send("enter valid query");
         res.end();
     });
+});
+
+// app.get('/searchparallel/:sugg', async (req, res) => {
+//     const sugg = req.params.sugg;
+//     let act_url = process.env['GET_SEARCH_URL'];
+//     let act_url2 = process.env['GET_SEARCH_URL2'];
+//     let param = process.env['GET_SEARCH_URL_PARAM'];
+//     let param2 = process.env['GET_SEARCH_URL2_PARAM'];
+
+//     param = JSON.parse(param.replace("${sugg}", sugg));
+//     param2 = JSON.parse(param2.replace("${sugg}", sugg));
+
+//     // Define an array of URLs
+//     const urls = [
+//         {
+//             url: act_url,
+//             param: param
+//         },
+//         {
+//             url: act_url2,
+//             param: param2
+//         }
+//     ];
+//     // Function to make a request for a single URL
+//     const fetchData = async (url, param) => {
+//         try {
+//             const response = await axios.post(url, param);
+//             return response.data;
+//         } catch (error) {
+//             console.error(`Error fetching data from ${url}: ${error.message}`);
+//             throw error;
+//         }
+//     };
+//     try {
+//         const results = await Promise.all(urls.map((obj) => fetchData(obj.url, obj.param)));
+//         console.log('Results:', results);
+//         res.send(results);
+//     } catch (error) {
+//         console.error('Error:', error.message);
+//     }
+// });
+
+
+// app.get('/search2/:sugg', async (req, res) => {
+//     const sugg = req.params.sugg;
+//     let act_url = process.env['GET_SEARCH_URL'];
+//     let param = process.env['GET_SEARCH_URL_PARAM'];
+//     param = JSON.parse(param.replace("${sugg}", sugg));
+//    act_url = 'https://xely3u4lod-dsn.algolia.net/1/indexes/*/queries?x-algolia-agent=Algolia%20for%20JavaScript%20(3.35.1)%3B%20Browser&x-algolia-application-id=XELY3U4LOD&x-algolia-api-key=5638539fd9edb8f2c6b024b49ec375bd';
+
+//     axios.post(act_url, param).then((response) => {
+//         console.log(response.data);
+//         const result = [];
+//         for (const resp of response.data.results[0].hits) {
+//             const res = {};
+//             res.id = resp.dmCustomData.id;
+//             res.title = resp.dmCustomData.title;
+//             res.brand = resp.dmCustomData.brand;
+//             res.content = resp.dmCustomData.content;
+//             res.websiteLink = resp.dmCustomData.websiteLink;
+//             res.releaseDate = resp.releaseDate;
+//             res.platforms = resp.dmCustomData.platforms;
+//             res.genres = resp.dmCustomData.genres;
+//             res.assets = resp.assets;
+//             result.push(res);
+//         }
+//         res.status(200).send(result);
+//     }).catch((err) => {
+//         res.status(400).send("enter valid query");
+//         res.end();
+//     });
+// });
+
+// app.get('/test', async (req, res) => {
+//     let config = {
+//         method: 'get',
+//         maxBodyLength: Infinity,
+//         url: 'https://nimbus.ubisoft.com/api/v1/items?categoriesFilter=all&fallbackLocale=en-gb&limit=8&locale=en-gb&mediaFilter=news&skip=8&startIndex=undefined&tags=BR-ubisoft%20GA-news&environment=master',
+//         headers: {
+//             'Cookie': 'AWSALB=hgbtK9RQwoiuiUHVBnUszHycg9dOWXWuxVBYoBUO6Uwr9DQKkAIffxHEMdKqbMi711jqZBYCywxTk98RnFyiSHL0HuliTwfPTDqLXvJ923r4xZzHGHchbO5ANvgR; AWSALBCORS=hgbtK9RQwoiuiUHVBnUszHycg9dOWXWuxVBYoBUO6Uwr9DQKkAIffxHEMdKqbMi711jqZBYCywxTk98RnFyiSHL0HuliTwfPTDqLXvJ923r4xZzHGHchbO5ANvgR'
+//         }
+//     };
+
+//     axios.request(config)
+//         .then((response) => {
+//             console.log(JSON.stringify(response.data));
+//         })
+//         .catch((error) => {
+//             console.log("error");
+//             res.send(error);
+//         });
+// });
+
+
+app.get('/news/:category', async (req, res) => {
+    const arrcategory = ['all', 'play-free', 'events', 'esports', 'game-updates'];
+    const category = arrcategory.includes(req.params.category) ? req.params.category : 'all';
+    let page_no = req.query.page_no == undefined || req.query.page_no == 1 ? 0 : req.query.page_no;
+    page_no = page_no.replace("${page_no}", page_no);
+
+    console.log("page_no:", page_no);
+    let act_url = process.env.GET_NEWS_URL;
+    act_url = act_url.replace("${category}", category);
+
+    axios({
+        method: "get",
+        url: act_url,
+        headers: {
+            'Authorization': process.env.AUTHORIZATION
+        }
+    }).then((response) => {
+        const result = {};
+        result.page = page_no;
+        result.category = response.data.categoriesFilter;
+        const items = [];
+        result.items = items;
+        for (const item of response.data.items) {
+            const obj_item = {};
+            obj_item.id = item.id;
+            obj_item.title = item.title;
+            obj_item.desc = item.abstract;
+            obj_item.date = item.date;
+            obj_item.thumbnail = item.thumbnail.url;
+            obj_item.categories = item.categories;
+            obj_item.authors = item.authors;
+
+            const inputString = item.content;
+            const youtubeUrlRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/g;
+            const matches = inputString.match(youtubeUrlRegex);
+
+            obj_item.videos = matches || [];
+
+            items.push(obj_item);
+        }
+        res.status(200).send(result);
+    }).catch((err) => {
+        res.status(400).send("err");
+    })
+});
+
+app.get('/entertainment/:category', async (req, res) => {
+    const arrcategory = ['music-book', 'film-television', 'education-event'];
+    let category = req.params.category;
+    if (category == 'music-book') {
+        category = 'ubisoft-books-%26-music';
+    }
+    else if (category == 'film-television') {
+        category = 'ubisoft-film-%26-television';
+    }
+    else {
+        category = 'ubisoft-education-%26-events';
+    }
+
+    let page_no = req.query.page_no == undefined || req.query.page_no == 1 ? 0 : req.query.page_no;
+    page_no = page_no.replace("${page_no}", page_no);
+    console.log("page_no:", page_no);
+
+    let act_url = process.env.GET_NEWS_URL;
+    act_url = act_url.replace("${category}", category);
+
+    axios({
+        method: "get",
+        url: act_url,
+        headers: {
+            'Authorization': process.env.AUTHORIZATION
+        }
+    }).then((response) => {
+        const result = {};
+        result.page = page_no;
+        result.category = response.data.categoriesFilter;
+        const items = [];
+        result.items = items;
+        for (const item of response.data.items) {
+            const obj_item = {};
+            obj_item.id = item.id;
+            obj_item.title = item.title;
+            obj_item.desc = item.abstract;
+            obj_item.date = item.date;
+            obj_item.thumbnail = item.thumbnail.url;
+            obj_item.categories = item.categories;
+            obj_item.authors = item.authors;
+
+            const inputString = item.content;
+            const youtubeUrlRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/g;
+            const matches = inputString.match(youtubeUrlRegex);
+
+            obj_item.videos = matches || [];
+
+            items.push(obj_item);
+        }
+        res.status(200).send(result);
+    }).catch((err) => {
+        res.status(400).send("err");
+    })
 });
 
 app.listen(port, () => {
