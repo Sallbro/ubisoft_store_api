@@ -270,12 +270,10 @@ app.get('/search/:sugg', async (req, res) => {
 app.get('/news/:category', async (req, res) => {
     const arrcategory = ['all', 'play-free', 'events', 'esports', 'game-updates'];
     const category = arrcategory.includes(req.params.category) ? req.params.category : 'all';
-    let page_no = req.query.page_no == undefined || req.query.page_no == 1 ? 0 : req.query.page_no;
-    page_no = page_no.replace("${page_no}", page_no);
-
-    console.log("page_no:", page_no);
+    let page_no = req.query.page_no == undefined || req.query.page_no == 1 ? '0' : req.query.page_no;
     let act_url = process.env.GET_NEWS_URL;
     act_url = act_url.replace("${category}", category);
+    act_url=act_url.replace("${page_no}", page_no);
 
     axios({
         method: "get",
@@ -326,12 +324,10 @@ app.get('/entertainment/:category', async (req, res) => {
         category = 'ubisoft-education-%26-events';
     }
 
-    let page_no = req.query.page_no == undefined || req.query.page_no == 1 ? 0 : req.query.page_no;
-    page_no = page_no.replace("${page_no}", page_no);
-    console.log("page_no:", page_no);
-
+    let page_no = req.query.page_no == undefined || req.query.page_no == 1 ? '0' : req.query.page_no;
     let act_url = process.env.GET_NEWS_URL;
     act_url = act_url.replace("${category}", category);
+    act_url=act_url.replace("${page_no}", page_no);
 
     axios({
         method: "get",
