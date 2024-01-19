@@ -273,7 +273,7 @@ app.get('/news/:category', async (req, res) => {
     let page_no = req.query.page_no == undefined || req.query.page_no == 1 ? '0' : req.query.page_no;
     let act_url = process.env.GET_NEWS_URL;
     act_url = act_url.replace("${category}", category);
-    act_url=act_url.replace("${page_no}", page_no);
+    act_url = act_url.replace("${page_no}", Number(page_no) * 10);
 
     axios({
         method: "get",
@@ -327,7 +327,7 @@ app.get('/entertainment/:category', async (req, res) => {
     let page_no = req.query.page_no == undefined || req.query.page_no == 1 ? '0' : req.query.page_no;
     let act_url = process.env.GET_NEWS_URL;
     act_url = act_url.replace("${category}", category);
-    act_url=act_url.replace("${page_no}", page_no);
+    act_url = act_url.replace("${page_no}", Number(page_no) * 10);
 
     axios({
         method: "get",
